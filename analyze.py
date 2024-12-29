@@ -2,6 +2,7 @@ import sqlite3
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
+import argparse
 
 
 # Env stuff
@@ -9,7 +10,7 @@ load_dotenv(dotenv_path=".env.local")
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
 # Path to our DB
-db_path = "chat_backup.db"
+db_path = "/Users/{}/Library/Messages/chat.db"
 
 # Currently using Gemini 2.0. Will switch to OpenAI eventually
 # NOTE: names in one-shot learning anonymized for privacy purposes
@@ -19,7 +20,7 @@ Each message is formatted as sender_id: message. The sender_id is arbitrary, but
 It will clarify to you who sent the message, which may be helpful context.
 Note that a sender_id of 0 indicates that it was sent by me. You can refer to those messages as "you".
 Please do not expose the sender_id in the prompt. If you see a message saying, "100: hello", do NOT include the 100 in the response.
-Give up to 3 paragraphs with 3-4 sentences per paragraph at most. If there are a huge amount of messages, feel free to provide a longer summary if necessary.
+Please output {} paragraphs, with 3-4 sentences per paragraph.
 
 Structure
 Input format: a list of text messages
@@ -66,9 +67,9 @@ def decode_binary(attributed_body: bytes):
 	return attributed_body
 
 
-def fetch_messages_from_chat(chat_name, limit=100):
+def fetch_messages_from_chat(chat_name, limit, mac_username):
 	# Connect to db
-	conn = sqlite3.connect(db_path)
+	conn = sqlite3.connect(db_path.format(mac_username))
 	cursor = conn.cursor()
 
 	# SQL Query
@@ -105,10 +106,54 @@ def fetch_messages_from_chat(chat_name, limit=100):
 
 
 if __name__ == "__main__":
-	display_name = "temp = ’tis’; return temp + ‘ms’ if o, s else temp + ‘nots’"
-	messages = fetch_messages_from_chat(chat_name=display_name)
-	full_prompt = prompt + f"\nInput: {messages}\nOutput:"
-	response = model.generate_content(full_prompt)
+	# CLI Args
+	parser = argparse.ArgumentParser(description="placeholder")
+	parser.add_argument(
+		"--no-prompt", "-np",
+		action="store_true",
+		help="Disables prompting to save Gemini API Usage",
+	)
+	parser.add_argument(
+		"--chat", "-c",
+		type=str,
+		required=True,
+		help="Specify the name of the chat",
+	)
+	parser.add_argument(
+		"--messages", "-m",
+		type=int,
+		default=50,
+		help="Number of messages to check up to",
+	)
+	parser.add_argument(
+		"--paragraphs", "-p",
+		type=int,
+		default=2,
+		help="Number of paragraphs to output",
+	)
+	parser.add_argument(
+		"--username", "-u",
+		type=str,
+		required=True,
+		help="Specify your macOS handle. You can find this by running `pwd` from any directory.",
+	)
+	
+	args = parser.parse_args()
 
-	# Print the model-generated response
-	print(response.text)
+	# Message processing
+	messages = fetch_messages_from_chat(
+		chat_name=args.chat,
+		limit=args.messages,
+		mac_username=args.username,
+	)
+
+	# Prompting
+	if args.no_prompt:
+		print(f"No-prompt enabled. Printing message history:\n{messages}")
+
+	else:
+		full_prompt = prompt.format(args.paragraphs) + f"\nInput: {messages}\nOutput:"
+		response = model.generate_content(full_prompt)
+		
+		# Print the model-generated response
+		print(f"Prompting enabled. Printing summary of last {args.messages} messages:\n{response.text}")
