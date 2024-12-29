@@ -7,7 +7,7 @@ Currently this app runs as a Python script, but this will change (when I have su
 
 1. Clone/fork this repo
 2. Give your terminal (Terminal, iTerm2, Warp, etc.) full disk access. You can find this in Settings > Privacy & Security.
-3. Create a `.env.local` file in the directory of this repo and paste your Gemini API key into it
+3. Create a `.env.local` file in the directory of this repo and paste your Gemini API key into it. If you don't have a Gemini API key, just make one -- it's free
 ```
 GEMINI_API_KEY=example_api_key
 ```
