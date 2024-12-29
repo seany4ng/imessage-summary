@@ -1,5 +1,7 @@
 # DO NOT INCLUDE. THIS IS MY IMESSAGE CHAT HISTORY
 chat_backup.db
+chat_backup.db-shm
+chat_backup.db-wal
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -132,6 +134,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.local
 .venv
 env/
 venv/
