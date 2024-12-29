@@ -14,6 +14,7 @@ GEMINI_API_KEY=example_api_key
 4. Run `pip install -r requirements.txt`. Recommend doing this in a virtualenv
 5. Run `python3 analyze.py -h` to see the available command line args. The required ones are chat name (`-c`) of your iMessage group chat and your MacOS username (e.g. `/Users/{seany4ng}` => `seany4ng`). To find your MacOS username, run pwd from any directory and you'll see your full path.
 6. Run the python script accordingly: `python3 analyze.py -c "secret chat" -u "seany4ng"`. Feel free to add more args for customizability, using above command to see available ones
+
 Credits: https://github.com/my-other-github-account/imessage_tools was helpful in figuring out how to decode the attributed body
 
 If you get stuck email me szyang@berkeley.edu
