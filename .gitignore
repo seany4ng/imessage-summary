@@ -3,6 +3,7 @@ chat_backup.db
 chat_backup.db-shm
 chat_backup.db-wal
 all-contacts.json
+imessage/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
