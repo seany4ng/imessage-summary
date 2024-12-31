@@ -30,12 +30,12 @@ def normalize_phone(raw: str) -> str:
 def parse_applescript_output(raw_output: str):
     """
     Given AppleScript output like:
-      'Audrey Zhang, item 1 of +16508231082, Charlie Guo, item 1 of (408) 390-2616, ...'
+      'First1 Last1, item 1 of +12223334444, First2 Last2, item 1 of (222) 333-4444, ...'
     produce a list of (name, phoneString).
     
     We assume the pattern:
       - Name tokens do NOT contain 'item X of' or digits (usually).
-      - 'item X of +16508231082' is a phone reference.
+      - 'item X of +12223334444' is a phone reference.
       - Possibly a phone can appear without 'item X of' if AppleScript outputs something else.
     """
     tokens = [t.strip() for t in raw_output.split(",")]
@@ -46,14 +46,14 @@ def parse_applescript_output(raw_output: str):
         token = token.strip()
         # If it's an 'item X of +number' pattern
         if token.startswith("item "):
-            # e.g. "item 1 of +16508231082"
+            # e.g. "item 1 of +12223334444"
             phone_part = re.sub(r"^item\s+\d+\s+of\s+", "", token).strip()
             if current_name:
                 pairs.append((current_name, phone_part))
 
         # If it contains enough digits to be a phone, or has an '@' for email, treat it as phone/email
         elif re.search(r"\d", token) or "@" in token:
-            # Could be a raw phone like "+16692569550" or something with parentheses
+            # Could be a raw phone like "+12223334444" or something with parentheses
             if current_name:
                 pairs.append((current_name, token))
 
